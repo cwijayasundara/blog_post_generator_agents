@@ -1,4 +1,5 @@
 llama-index-core
+llama-index
 llama-index-embeddings-openai
 llama-index-llms-openai
 llama-index-llms-nvidia
@@ -10,3 +11,5 @@ llama-parse
 python-dotenv
 streamlit
 torch
+llama-index-llms-deepseek
+llama-index-llms-gemini

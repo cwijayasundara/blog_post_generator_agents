@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
 from llama_index.core import Settings
-import os
 from llama_index.core import (
     StorageContext,
     load_index_from_storage,
@@ -19,13 +18,27 @@ from llama_index.core.workflow import (
 )
 from llama_index.core.agent import FunctionCallingAgent
 from pathlib import Path
+from llama_index.llms.deepseek import DeepSeek
+from llama_index.llms.groq import Groq
+from llama_index.llms.gemini import Gemini
+
+import os
 
 nest_asyncio.apply()
 
 _ = load_dotenv()
 
-Settings.llm = OpenAI(model="gpt-4o-mini", 
-                      temperature=0.5)
+api_key = os.getenv("DEEPSEEK_API_KEY")
+
+exec_llm = OpenAI(model="gpt-4o-mini", temperature=1.0)
+plan_llm = OpenAI(model="o1", temperature=1.0)
+
+# llm = DeepSeek(model="deepseek-reasoner", api_key=api_key)
+# llm = DeepSeek(model="deepseek-chat", api_key=api_key)
+# llm = Groq(model="deepseek-r1-distill-llama-70b")
+# llm = Gemini(model="models/gemini-2.0-flash-thinking-exp-01-21")
+    
+# Settings.llm = llm
 
 Settings.embed_model = OpenAIEmbedding(
     model_name="text-embedding-3-small"
@@ -86,7 +99,8 @@ class DocumentResearchAgent(Workflow):
         Another agent will formulate questions to find the facts necessary to fulfill the outline.
         The topic is: {query}"""
 
-        response = await Settings.llm.acomplete(prompt)
+        # response = await Settings.llm.acomplete(prompt)
+        response = await plan_llm.acomplete(prompt)
 
         ctx.write_event_to_stream(
             ProgressEvent(progress="Outline:\n" + str(response))
@@ -110,7 +124,8 @@ class DocumentResearchAgent(Workflow):
         on a new line. Do not include headers or categories or any preamble or explanation; just a
         list of questions. For speed of response, limit yourself to 8 questions. The outline is: {outline}"""
 
-        response = await Settings.llm.acomplete(prompt)
+        # response = await Settings.llm.acomplete(prompt)
+        response = await exec_llm.acomplete(prompt)
 
         questions = str(response).split("\n")
         questions = [x for x in questions if x]
@@ -191,7 +206,8 @@ class DocumentResearchAgent(Workflow):
             ProgressEvent(progress="Writing report with prompt:\n" + prompt)
         )
 
-        report = await Settings.llm.acomplete(prompt)
+        # report = await Settings.llm.acomplete(prompt)
+        report = await exec_llm.acomplete(prompt)
 
         return ReviewEvent(report=str(report))
     
@@ -220,7 +236,8 @@ class DocumentResearchAgent(Workflow):
         The blog post is: <blogpost>{report}</blogpost>.
         If the blog post is fine, return just the string 'OKAY'."""
 
-        response = await Settings.llm.acomplete(prompt)
+        # response = await Settings.llm.acomplete(prompt)
+        response = await plan_llm.acomplete(prompt)
 
         if response == "OKAY" or await ctx.get("num_reviews") >= 3:
             ctx.write_event_to_stream(
