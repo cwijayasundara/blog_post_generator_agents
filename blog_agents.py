@@ -21,6 +21,7 @@ from pathlib import Path
 from llama_index.llms.deepseek import DeepSeek
 from llama_index.llms.groq import Groq
 from llama_index.llms.gemini import Gemini
+from llama_index.llms.mistralai import MistralAI
 
 import os
 
@@ -29,13 +30,16 @@ nest_asyncio.apply()
 _ = load_dotenv()
 
 api_key = os.getenv("DEEPSEEK_API_KEY")
+mistral_key = os.getenv("MISTRAL_KEY")
 
-exec_llm = OpenAI(model="gpt-4o-mini", temperature=1.0)
-plan_llm = OpenAI(model="o1", temperature=1.0)
+plan_llm = OpenAI(model="o3-mini", temperature=1.0)
+exec_llm = MistralAI(model="mistral-small-latest", api_key=mistral_key)
 
+# plan_llm = OpenAI(model="o1-mini", temperature=1.0)
+# exec_llm = OpenAI(model="gpt-4o-mini", temperature=1.0)
 # llm = DeepSeek(model="deepseek-reasoner", api_key=api_key)
 # llm = DeepSeek(model="deepseek-chat", api_key=api_key)
-# llm = Groq(model="deepseek-r1-distill-llama-70b")
+# plan_llm = Groq(model="deepseek-r1-distill-llama-70b")
 # llm = Gemini(model="models/gemini-2.0-flash-thinking-exp-01-21")
     
 # Settings.llm = llm

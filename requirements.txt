@@ -1,7 +1,7 @@
 llama-index-core
 llama-index
 llama-index-embeddings-openai
-llama-index-llms-openai
+llama-index-llms-openai==0.3.15
 llama-index-llms-nvidia
 llama-index-embeddings-nvidia
 llama-index-llms-groq
@@ -13,3 +13,4 @@ streamlit
 torch
 llama-index-llms-deepseek
 llama-index-llms-gemini
+llama-index-llms-mistralai
